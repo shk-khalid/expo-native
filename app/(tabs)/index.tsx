@@ -1,215 +1,191 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { MoreHorizontal } from 'lucide-react-native';
 import Header from '@/components/Header';
+
+const moods = [
+  { emoji: '😄', bg: '#FEFCE8' },
+  { emoji: '😊', bg: '#ECFDF5' },
+  { emoji: '😠', bg: '#FEF0F0' },
+  { emoji: '🙂', bg: '#EFF6FF' },
+  { emoji: '😢', bg: '#FEF3C7' },
+  { emoji: '😔', bg: '#EDE9FE' },
+];
+
+// exact columns you asked for
+const dotColumns = [4, 4, 2, 2, 2, 1, 1, 1, 2];
 
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <Header />
-      
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>Welcome back</Text>
-          <Text style={styles.titleText}>
-            Ready to start your{'\n'}journey?
-          </Text>
-        </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Daily Progress</Text>
-          <Text style={styles.cardSubtitle}>Keep up the great work!</Text>
-          
-          <View style={styles.progressContainer}>
-            <View style={styles.progressHeader}>
-              <Text style={styles.progressLabel}>Today's Goal</Text>
-              <Text style={styles.progressValue}>75%</Text>
-            </View>
-            <View style={styles.progressBarBackground}>
-              <View style={[styles.progressBar, { width: '75%' }]} />
-            </View>
+      <ScrollView contentContainerStyle={{ paddingBottom: 60 }}>
+        {/* Daily Mood Log */}
+        <View style={styles.moodSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Daily Mood Log</Text>
+            <MoreHorizontal size={16} strokeWidth={2} color="#6B7280" />
           </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.moodList}
+          >
+            {moods.map((m, i) => (
+              <TouchableOpacity
+                key={i}
+                style={[styles.moodItem, { backgroundColor: m.bg }]}
+              >
+                <Text style={styles.moodEmoji}>{m.emoji}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Quick Actions</Text>
-          
-          <View style={styles.actionRow}>
-            <View style={[styles.actionCard, styles.blueAction]}>
-              <Text style={styles.actionTitle}>Start Practice</Text>
-              <Text style={styles.actionSubtitle}>Begin your session</Text>
-            </View>
-            
-            <View style={[styles.actionCard, styles.greenAction]}>
-              <Text style={styles.actionTitle}>View Progress</Text>
-              <Text style={styles.actionSubtitle}>Check your stats</Text>
-            </View>
+        {/* Progress Card */}
+        <View style={styles.progressCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardHeaderTitle}>Your progress</Text>
+            <MoreHorizontal size={16} strokeWidth={2} color="#6B7280" />
           </View>
-        </View>
 
-        <View style={styles.bottomSection}>
-          <Text style={styles.cardTitle}>Recent Activity</Text>
-          
-          {[1, 2, 3].map((item) => (
-            <View key={item} style={styles.activityCard}>
-              <View style={styles.activityContent}>
-                <View>
-                  <Text style={styles.activityTitle}>Practice Session {item}</Text>
-                  <Text style={styles.activityTime}>Completed 2 hours ago</Text>
-                </View>
-                <View style={styles.completedBadge}>
-                  <Text style={styles.completedText}>Completed</Text>
-                </View>
+          <View style={styles.progressRow}>
+            <Text style={styles.progressValue}>89%</Text>
+            <Text style={styles.progressSubtitle}>
+              Of the weekly {'\n'} plan completed
+            </Text>
+          </View>
+
+          <View style={styles.circlesContainer}>
+            {dotColumns.map((count, colIdx) => (
+              <View key={colIdx} style={styles.dotColumn}>
+                {Array.from({ length: count }).map((_, i) => (
+                  <View key={i} style={styles.circle} />
+                ))}
               </View>
-            </View>
-          ))}
+            ))}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+const CARD_RADIUS = 24;
+const MOOD_SIZE = 50;
+const DOT_SIZE = 20;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
   },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-  welcomeSection: {
+
+  /* Mood Log */
+  moodSection: {
     marginTop: 32,
-    marginBottom: 24,
+    marginHorizontal: 24,
   },
-  welcomeText: {
-    color: '#6B7280',
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  titleText: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
     color: '#000000',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    lineHeight: 36,
   },
-  card: {
+  moodList: {
+    paddingRight: 24,
+  },
+  moodItem: {
+    width: MOOD_SIZE,
+    height: MOOD_SIZE,
+    borderRadius: MOOD_SIZE / 2,
+    marginRight: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    elevation: 2,
+  },
+  moodEmoji: {
+    fontSize: 24,
+  },
+
+  /* Progress Card */
+  progressCard: {
+    marginTop: 24,
+    marginHorizontal: 24,
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    borderRadius: CARD_RADIUS,
     padding: 24,
-    marginBottom: 24,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
     elevation: 3,
   },
-  cardTitle: {
-    color: '#000000',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  cardSubtitle: {
-    color: '#6B7280',
+  cardHeaderTitle: {
     fontSize: 16,
+    fontWeight: '500',
+    color: '#000000',
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     marginBottom: 16,
   },
-  progressContainer: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 16,
-    padding: 16,
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  progressLabel: {
-    color: '#374151',
-    fontWeight: '500',
-  },
   progressValue: {
+    fontSize: 64,
+    fontWeight: '400',
     color: '#000000',
-    fontWeight: 'bold',
+    lineHeight: 64,
   },
-  progressBarBackground: {
-    backgroundColor: '#D1D5DB',
-    borderRadius: 8,
-    height: 8,
-  },
-  progressBar: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
-    height: 8,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  actionCard: {
-    borderRadius: 16,
-    padding: 16,
+  progressSubtitle: {
     flex: 1,
-    marginHorizontal: 6,
-  },
-  blueAction: {
-    backgroundColor: '#DBEAFE',
-  },
-  greenAction: {
-    backgroundColor: '#D1FAE5',
-  },
-  actionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'right',
+    marginLeft: 16,
     marginBottom: 4,
   },
-  actionSubtitle: {
-    fontSize: 14,
-    opacity: 0.8,
-  },
-  bottomSection: {
-    marginBottom: 80,
-  },
-  activityCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  activityContent: {
+
+  /* Dot columns */
+  circlesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 16,
+    opacity: 0.8,
+  },
+  dotColumn: {
+    flexDirection: 'column-reverse',
     alignItems: 'center',
   },
-  activityTitle: {
-    color: '#000000',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  activityTime: {
-    color: '#6B7280',
-    fontSize: 14,
-    marginTop: 2,
-  },
-  completedBadge: {
-    backgroundColor: '#D1FAE5',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-  completedText: {
-    color: '#065F46',
-    fontSize: 12,
-    fontWeight: '500',
+  circle: {
+    width: DOT_SIZE,
+    height: DOT_SIZE,
+    borderRadius: DOT_SIZE / 2,
+    backgroundColor: '#CFFAE1',
+    marginVertical: 6,
   },
 });

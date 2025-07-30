@@ -1,4 +1,3 @@
-// app/(tabs)/_layout.tsx
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
